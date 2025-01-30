@@ -11,6 +11,7 @@ int save_DataBase(Hash* hash) {
         }
     }
 
+
     /* If not empty, Then save the data to a file */
     if (i < 28) {
 
@@ -21,13 +22,17 @@ int save_DataBase(Hash* hash) {
 
         /* Check whether the emtered file is valid or not */
         char* fileExtn = strcasestr(file, ".txt");
-        if (strcasecmp(fileExtn, ".txt") != 0) {
-            printf("%s should be \".txt\" extension\n", file);
+        if (fileExtn == NULL || strcasecmp(fileExtn, ".txt") != 0) {
+            printf("Error: %s should have a \".txt\" extension\n", file);
             return FAILURE;
         }
 
         /* If it is a valid file, open it */
-        FILE *fptr = fopen(file, "w");
+        FILE* fptr = fopen(file, "w");
+        if (fptr == NULL) {
+            printf("Error: Unable to open file for writing.\n");
+            return FAILURE;
+        }
 
         /* Iterate through the hash */
         for (int i = 0; i < 28; i++) {
@@ -51,14 +56,15 @@ int save_DataBase(Hash* hash) {
                     /* Update the subnode */
                     subTemp = subTemp->Slink;
                 }
-                if (subTemp == NULL) {
-                    fprintf(fptr, "#\n");
-                }
+               fprintf(fptr, "#\n"); // End marker for main node
 
                 /* Update the main node */
                 temp = temp->Mlink;
             }
         }
+        fclose(fptr);
+        printf("Database successfully saved to %s\n", file);
+        return SUCCESS;
         return SUCCESS;
     /* If empty, print the below */
     }else {
@@ -66,3 +72,5 @@ int save_DataBase(Hash* hash) {
         return FAILURE;
     }
 }
+
+
